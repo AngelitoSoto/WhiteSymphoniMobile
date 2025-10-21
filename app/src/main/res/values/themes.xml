@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<<<<<<< HEAD
+
     <style name="Theme.WhiteSymphony" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>
 
 
 
-=======
 
-    <style name="Theme.ProyectoMusica" parent="android:Theme.Material.Light.NoActionBar" />
-</resources>
->>>>>>> 90aff6478ca9c687abf947b7ce272dd117ec4b1b

@@ -1,7 +1,5 @@
 <resources>
-<<<<<<< HEAD
+
     <string name="app_name">WhiteSymphoniMobil</string>
-=======
-    <string name="app_name">Proyecto-Musica</string>
->>>>>>> 90aff6478ca9c687abf947b7ce272dd117ec4b1b
+
 </resources>

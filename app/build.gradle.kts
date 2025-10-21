@@ -18,57 +18,51 @@ android {
 
 }
 
-android {
-    namespace = "com.example.proyecto_musica"
-    compileSdk = 36
+    android {
+        namespace = "com.example.whitesymphonymobil"
+        compileSdk = 36
 
-    defaultConfig {
-        applicationId = "com.example.proyecto_musica"
-        minSdk = 21
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+        defaultConfig {
+            applicationId = "com.example.whitesymphonymobil"
+            minSdk = 21
+            targetSdk = 36
+            versionCode = 1
+            versionName = "1.0"
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
-    }
 
-    buildFeatures { compose = true }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
-
-    kotlinOptions { jvmTarget = "17" }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    packaging {
-        resources.excludes += setOf("META-INF/AL2.0", "META-INF/LGPL2.1")
-
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_11
-            targetCompatibility = JavaVersion.VERSION_11
+        buildTypes {
+            release {
+                isMinifyEnabled = false
+                proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+                )
+            }
         }
 
         buildFeatures {
             compose = true
+        }
 
+        composeOptions {
+            kotlinCompilerExtensionVersion = "1.5.1"
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+
+        kotlinOptions {
+            jvmTarget = "17"
+        }
+
+        packaging {
+            resources.excludes += setOf("META-INF/AL2.0", "META-INF/LGPL2.1")
         }
     }
+
 
     dependencies {
 
@@ -90,7 +84,7 @@ android {
         implementation("androidx.appcompat:appcompat:1.7.0")
     }
 }
-}
+
 
 
 
