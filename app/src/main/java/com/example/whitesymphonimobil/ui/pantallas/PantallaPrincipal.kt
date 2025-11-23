@@ -16,6 +16,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.whitesymphonymobil.R
 import com.example.whitesymphonymobil.data.model.Producto
+import com.example.whitesymphonimobil.data.local.entity.CarritoProducto
+import com.example.whitesymphonymobil.ui.viewmodel.CarritoViewModel
 import kotlin.math.roundToInt
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
@@ -24,7 +26,7 @@ import androidx.compose.material.icons.outlined.Star
 @Composable
 fun PantallaPrincipal(
     onIrCarrito: () -> Unit,
-    onAgregar: (Producto) -> Unit
+    viewModel: CarritoViewModel
 ) {
     val productos = listOf(
         Producto("Musica 1", 45000.0, R.drawable.logo, 4.5),
@@ -63,6 +65,7 @@ fun PantallaPrincipal(
                 .fillMaxSize()
         ) {
             items(productos) { producto ->
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -85,14 +88,26 @@ fun PantallaPrincipal(
 
                         Spacer(modifier = Modifier.width(16.dp))
 
-
                         Column(modifier = Modifier.weight(1f)) {
+
                             Text(producto.nombre, style = MaterialTheme.typography.titleMedium)
                             Text("Precio: $${producto.precio}")
                             RatingStars(producto.rating)
+
                             Spacer(modifier = Modifier.height(8.dp))
+
                             Button(
-                                onClick = { onAgregar(producto) },
+                                onClick = {
+                                    // ⭐ Convertimos Producto → CarritoProducto
+                                    val item = CarritoProducto(
+                                        nombre = producto.nombre,
+                                        precio = producto.precio,
+                                        imageRes = producto.imageRes,
+                                        rating = producto.rating,
+                                        cantidad = 1
+                                    )
+                                    viewModel.add(item)
+                                },
                                 modifier = Modifier.align(Alignment.End)
                             ) {
                                 Text("Agregar")

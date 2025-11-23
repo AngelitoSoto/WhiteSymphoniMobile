@@ -15,33 +15,52 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.whitesymphonymobil.data.model.Producto
+import com.example.whitesymphonimobil.data.local.entity.CarritoProducto
 import com.example.whitesymphonymobil.ui.pantallas.PantallaPago
-
+import com.example.whitesymphonymobil.ui.viewmodel.CarritoViewModel
 
 @Composable
 fun PantallaCarrito(
-    carrito: MutableList<Producto>,
+    viewModel: CarritoViewModel,
     onVolver: () -> Unit
 ) {
     var mostrandoPago by remember { mutableStateOf(false) }
     var mostrandoResena by remember { mutableStateOf(false) }
     var pagoFinalizado by remember { mutableStateOf(false) }
 
+
+    var productosParaResena by remember { mutableStateOf<List<com.example.whitesymphonymobil.data.model.Producto>>(emptyList()) }
+
+    val carrito by viewModel.cartItems.collectAsState()
+    val total by viewModel.total.collectAsState()
+
     when {
+
 
         mostrandoPago -> {
             PantallaPago {
+
+                productosParaResena = carrito.map {
+                    com.example.whitesymphonymobil.data.model.Producto(
+                        nombre = it.nombre,
+                        precio = it.precio,
+                        imageRes = it.imageRes,
+                        rating = it.rating
+                    )
+                }
+
                 mostrandoPago = false
                 mostrandoResena = true
-                carrito.clear()
+
+                // Ahora sí limpiamos SQLite
+                viewModel.clear()
             }
         }
 
 
         mostrandoResena -> {
             PantallaResena(
-                productos = carrito,
+                productos = productosParaResena,
                 onFinish = {
                     mostrandoResena = false
                     pagoFinalizado = true
@@ -72,8 +91,6 @@ fun PantallaCarrito(
 
 
         else -> {
-            val total = carrito.sumOf { it.precio }
-
             Column(modifier = Modifier.fillMaxSize()) {
 
                 Row(
@@ -93,7 +110,6 @@ fun PantallaCarrito(
                     )
                 }
 
-
                 if (carrito.isEmpty()) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -104,33 +120,12 @@ fun PantallaCarrito(
                 } else {
                     LazyColumn(modifier = Modifier.weight(1f)) {
                         items(carrito) { producto ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Image(
-                                    painter = painterResource(id = producto.imageRes),
-                                    contentDescription = producto.nombre,
-                                    modifier = Modifier.size(64.dp)
-                                )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(producto.nombre, fontWeight = FontWeight.Bold)
-                                    Text("$${producto.precio}")
-                                }
-                                Button(
-                                    onClick = { carrito.remove(producto) },
-                                    modifier = Modifier.height(40.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)
-                                ) {
-                                    Text("Eliminar")
-                                }
-                            }
+                            ItemCarritoRow(
+                                producto = producto,
+                                onEliminar = { viewModel.remove(producto) }
+                            )
                         }
                     }
-
 
                     Column(
                         modifier = Modifier
@@ -154,7 +149,6 @@ fun PantallaCarrito(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-
                         OutlinedButton(
                             onClick = onVolver,
                             modifier = Modifier.fillMaxWidth()
@@ -164,6 +158,41 @@ fun PantallaCarrito(
                     }
                 }
             }
+        }
+    }
+}
+
+
+@Composable
+fun ItemCarritoRow(
+    producto: CarritoProducto,
+    onEliminar: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = producto.imageRes),
+            contentDescription = producto.nombre,
+            modifier = Modifier.size(64.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(producto.nombre, fontWeight = FontWeight.Bold)
+            Text("$${producto.precio}")
+            Text("Cantidad: ${producto.cantidad}", fontSize = 12.sp)
+        }
+
+        Button(
+            onClick = onEliminar,
+            modifier = Modifier.height(40.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)
+        ) {
+            Text("Eliminar")
         }
     }
 }
