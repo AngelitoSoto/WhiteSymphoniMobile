@@ -22,8 +22,19 @@ class ProductoViewModel(
 
     fun cargarProductos() {
         viewModelScope.launch(dispatcher) {
-            repository.syncProductos()
-            _productos.value = repository.obtenerLocal()
+            try {
+                repository.syncProductos()
+            } catch (e: Exception) {
+
+                println("❌ Error: servidor no disponible -> ${e.message}")
+            }
+
+
+            _productos.value = try {
+                repository.obtenerLocal()
+            } catch (e: Exception) {
+                emptyList()
+            }
         }
     }
 }
