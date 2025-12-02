@@ -8,7 +8,7 @@ data class CarritoProducto(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val nombre: String,
     val precio: Double,
-    val imageRes: Int,
+    val imageRes: String,
     val rating: Double,
     val cantidad: Int = 1
 )

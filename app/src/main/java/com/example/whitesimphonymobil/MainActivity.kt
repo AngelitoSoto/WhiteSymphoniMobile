@@ -30,6 +30,9 @@ import com.example.whitesimphonymobil.ui.pantallas.PantallaPago
 import com.example.whitesimphonymobil.ui.screens.PantallaResena
 import com.example.whitesimphonymobil.ui.screens.PantallaUsuario
 import com.example.whitesimphonymobil.ui.pantallas.PantallaBusquedaMusica
+import com.example.whitesimphonymobil.ui.pantallas.PantallaProductos
+import com.example.whitesimphonymobil.ui.pantallas.PantallaAgregarProducto
+import com.example.whitesimphonymobil.ui.pantallas.PantallaEditarProducto
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -41,6 +44,8 @@ class MainActivity : ComponentActivity() {
 
 
                 var pantallaActual by remember { mutableStateOf("home") }
+
+                val productoIdAEditar = remember { mutableStateOf(0L) }
 
 
                 val context = LocalContext.current
@@ -57,10 +62,11 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     bottomBar = {
-                        if (pantallaActual in listOf("home", "usuario")) {
+                        if (pantallaActual in listOf("home", "productos", "usuario")) {
                             BarraInferior(
                                 onHomeClick = { pantallaActual = "home" },
                                 onUserClick = { pantallaActual = "usuario" },
+                                onProductosClick = { pantallaActual = "productos"},
                                 currentScreen = pantallaActual
                             )
                         }
@@ -71,7 +77,6 @@ class MainActivity : ComponentActivity() {
 
                         when (pantallaActual) {
 
-
                             "home" -> PantallaPrincipal(
                                 onIrCarrito = { pantallaActual = "carrito" },
                                 onIrBusquedaMusica = { pantallaActual = "busqueda" },
@@ -79,23 +84,39 @@ class MainActivity : ComponentActivity() {
                                 productoViewModel = productoViewModel
                             )
 
+                            "productos" -> PantallaProductos(
+                                viewModel = productoViewModel,
+                                onAgregar = { pantallaActual = "agregarProducto" },
+                                onEditar = { id ->
+                                    productoIdAEditar.value = id
+                                    pantallaActual = "editarProducto"
+                                }
+                            )
+
+                            "agregarProducto" -> PantallaAgregarProducto(
+                                viewModel = productoViewModel,
+                                onVolver = { pantallaActual = "productos" }
+                            )
+
+                            "editarProducto" -> PantallaEditarProducto(
+                                productId = productoIdAEditar.value,
+                                viewModel = productoViewModel,
+                                onVolver = { pantallaActual = "productos" }
+                            )
 
                             "carrito" -> PantallaCarrito(
                                 viewModel = carritoViewModel,
                                 onVolver = { pantallaActual = "home" }
                             )
 
-
                             "pago" -> PantallaPago {
                                 pantallaActual = "resena"
                             }
-
 
                             "resena" -> PantallaResena(
                                 productos = emptyList(),
                                 onFinish = { pantallaActual = "usuario" }
                             )
-
 
                             "usuario" -> PantallaUsuario(
                                 onLoginSuccess = { pantallaActual = "home" }

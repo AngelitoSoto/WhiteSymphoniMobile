@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.example.whitesimphonymobil.data.remote.dto.ProductoDto
 
 class ProductoViewModel(
     private val repository: ProductoRepository,
@@ -34,6 +35,39 @@ class ProductoViewModel(
                 repository.obtenerLocal()
             } catch (e: Exception) {
                 emptyList()
+            }
+        }
+    }
+
+    fun eliminarProducto(id: Long) {
+        viewModelScope.launch(dispatcher) {
+            try {
+                repository.eliminarProducto(id)
+                _productos.value = repository.obtenerLocal()
+            } catch (e: Exception) {
+                println("Error al eliminar: ${e.message}")
+            }
+        }
+    }
+
+    fun agregarProducto(dto: ProductoDto) {
+        viewModelScope.launch(dispatcher) {
+            try {
+                repository.agregarProducto(dto)
+                cargarProductos()
+            } catch (e: Exception) {
+                println("❌ Error POST: ${e.message}")
+            }
+        }
+    }
+
+    fun editarProducto(id: Long, dto: ProductoDto) {
+        viewModelScope.launch(dispatcher) {
+            try {
+                repository.editarProducto(id, dto)
+                cargarProductos()
+            } catch (e: Exception) {
+                println("❌ Error PUT: ${e.message}")
             }
         }
     }

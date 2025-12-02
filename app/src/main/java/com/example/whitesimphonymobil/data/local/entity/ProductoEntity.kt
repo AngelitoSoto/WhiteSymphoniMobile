@@ -9,6 +9,6 @@ data class ProductoEntity(
     val id: Long,
     val nombre: String,
     val precio: Double,
-    val imageRes: Int,
+    val imagenUrl: String,
     val rating: Double
 )

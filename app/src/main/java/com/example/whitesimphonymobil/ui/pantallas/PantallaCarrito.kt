@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.example.whitesimphonymobil.data.local.entity.CarritoProducto
 import com.example.whitesimphonymobil.ui.pantallas.PantallaPago
 import com.example.whitesimphonymobil.ui.viewmodel.CarritoViewModel
+import coil.compose.rememberAsyncImagePainter
 
 @Composable
 fun PantallaCarrito(
@@ -179,8 +180,16 @@ fun ItemCarritoRow(
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val painter = if (producto.imageRes.startsWith("http")) {
+
+            rememberAsyncImagePainter(producto.imageRes)
+        } else {
+
+            painterResource(id = producto.imageRes.toInt())
+        }
+
         Image(
-            painter = painterResource(id = producto.imageRes),
+            painter = painter,
             contentDescription = producto.nombre,
             modifier = Modifier.size(64.dp)
         )

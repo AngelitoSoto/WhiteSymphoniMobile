@@ -3,6 +3,6 @@
 data class Producto(
     val nombre: String,
     val precio: Double,
-    val imageRes: Int,
+    val imageRes: String,
     val rating: Double
 )

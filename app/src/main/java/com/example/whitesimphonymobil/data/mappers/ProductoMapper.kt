@@ -7,10 +7,10 @@ import com.example.whitesimphonymobil.data.local.entity.ProductoEntity
 
 fun ProductoDto.toEntity(): ProductoEntity {
     return ProductoEntity(
-        id = id,
+        id = id ?: 0L,
         nombre = nombre,
         precio = precio,
-        imageRes = R.drawable.logo,
+        imagenUrl = imagenUrl,
         rating = rating
     )
 }

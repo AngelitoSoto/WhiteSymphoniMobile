@@ -11,7 +11,7 @@ import com.example.whitesimphonymobil.data.local.dao.DaoProducto
 
 @Database(
     entities = [CarritoProducto::class, ProductoEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

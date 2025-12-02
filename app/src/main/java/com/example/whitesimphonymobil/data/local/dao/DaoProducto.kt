@@ -12,4 +12,10 @@ interface DaoProducto {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(productos: List<ProductoEntity>)
+
+    @Query("DELETE FROM productos WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
+    @Query("DELETE FROM productos")
+    suspend fun clearTable()
 }

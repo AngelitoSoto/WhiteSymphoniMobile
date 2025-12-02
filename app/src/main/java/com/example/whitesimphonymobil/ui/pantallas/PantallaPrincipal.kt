@@ -24,6 +24,9 @@ import androidx.compose.material.icons.outlined.Star
 import com.example.whitesimphonymobil.ui.viewmodel.ProductoViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import coil.compose.rememberAsyncImagePainter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,30 +37,32 @@ fun PantallaPrincipal(
     productoViewModel: ProductoViewModel
 ) {
 
-    LaunchedEffect(Unit) {
-        productoViewModel.cargarProductos()
+    val productosBD = productoViewModel.productos.collectAsState().value
+
+    val primeraCarga = remember { mutableStateOf(true) }
+
+    LaunchedEffect(productosBD) {
+        if (primeraCarga.value) {
+            productoViewModel.cargarProductos()
+            primeraCarga.value = false
+        }
     }
 
 
     val productosLocales = listOf(
-        Producto("Musica 1", 45000.0, R.drawable.logo, 4.5),
-        Producto("Musica 2", 60000.0, R.drawable.logo, 4.0),
-        Producto("Musica 3", 120000.0, R.drawable.logo, 5.0)
+        Producto("Musica 1", 45000.0, R.drawable.logo.toString(), 4.5),
+        Producto("Musica 2", 60000.0, R.drawable.logo.toString(), 4.0),
+        Producto("Musica 3", 120000.0, R.drawable.logo.toString(), 5.0)
     )
-
-
-    val productosBD = productoViewModel.productos.collectAsState().value
-
 
     val productosBD_convertidos = productosBD.map {
         Producto(
             nombre = it.nombre,
             precio = it.precio,
-            imageRes = it.imageRes,
+            imageRes = it.imagenUrl,
             rating = it.rating
         )
     }
-
 
     val productos = productosLocales + productosBD_convertidos
 
@@ -78,7 +83,7 @@ fun PantallaPrincipal(
                 actions = {
                     IconButton(onClick = { onIrBusquedaMusica() }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_music), // Usa un icono que tengas
+                            painter = painterResource(id = R.drawable.ic_music),
                             contentDescription = "Buscar música"
                         )
                     }
@@ -112,8 +117,23 @@ fun PantallaPrincipal(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
+
+                        val painter =
+                            when {
+                                producto.imageRes.isBlank() -> painterResource(R.drawable.logo)
+
+                                producto.imageRes.startsWith("http") ->
+                                    rememberAsyncImagePainter(producto.imageRes)
+
+                                else -> {
+                                    val id = producto.imageRes.toIntOrNull()
+                                    if (id != null) painterResource(id)
+                                    else painterResource(R.drawable.logo)
+                                }
+                            }
+
                         Image(
-                            painter = painterResource(id = producto.imageRes),
+                            painter = painter,
                             contentDescription = producto.nombre,
                             modifier = Modifier
                                 .size(80.dp)
@@ -132,7 +152,6 @@ fun PantallaPrincipal(
 
                             Button(
                                 onClick = {
-
                                     val item = CarritoProducto(
                                         nombre = producto.nombre,
                                         precio = producto.precio,
