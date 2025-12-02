@@ -5,21 +5,50 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.whitesimphonymobil.data.local.entity.CarritoProducto
-import com.example.whitesimphonymobil.ui.pantallas.PantallaPago
-import com.example.whitesimphonymobil.ui.viewmodel.CarritoViewModel
+import androidx.compose.ui.text.font.FontWeight
 import coil.compose.rememberAsyncImagePainter
+import com.example.whitesymphonymobil.R
+import com.example.whitesimphonymobil.data.local.entity.CarritoProducto
+import com.example.whitesimphonymobil.ui.viewmodel.CarritoViewModel
+import com.example.whitesimphonymobil.ui.pantallas.PantallaPago
+import com.example.whitesimphonymobil.ui.screens.PantallaResena
+import androidx.compose.ui.res.painterResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+
+@Composable
+fun ImagenSegura(url: String, size: Int = 64) {
+
+    val painter =
+        when {
+            url.isBlank() ->
+                painterResource(R.drawable.logo)
+
+            url.startsWith("http") ->
+                rememberAsyncImagePainter(url)
+
+            else -> {
+                val id = url.toIntOrNull()
+                if (id != null) painterResource(id)
+                else painterResource(R.drawable.logo)
+            }
+        }
+
+    Image(
+        painter = painter,
+        contentDescription = null,
+        modifier = Modifier.size(size.dp)
+    )
+}
+
+
 
 @Composable
 fun PantallaCarrito(
@@ -34,14 +63,14 @@ fun PantallaCarrito(
     var mostrandoResena by remember { mutableStateOf(false) }
     var pagoFinalizado by remember { mutableStateOf(false) }
 
-
-    var productosParaResena by remember { mutableStateOf<List<com.example.whitesimphonymobil.data.model.Producto>>(emptyList()) }
+    var productosParaResena by remember {
+        mutableStateOf<List<com.example.whitesimphonymobil.data.model.Producto>>(emptyList())
+    }
 
     val carrito by viewModel.cartItems.collectAsState()
     val total by viewModel.total.collectAsState()
 
     when {
-
 
         mostrandoPago -> {
             PantallaPago {
@@ -57,12 +86,9 @@ fun PantallaCarrito(
 
                 mostrandoPago = false
                 mostrandoResena = true
-
-                // Ahora sí limpiamos SQLite
                 viewModel.clear()
             }
         }
-
 
         mostrandoResena -> {
             PantallaResena(
@@ -74,27 +100,32 @@ fun PantallaCarrito(
             )
         }
 
-
         pagoFinalizado -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
                     Icon(
                         Icons.Default.CheckCircle,
                         contentDescription = null,
                         tint = Color(0xFF4CAF50),
                         modifier = Modifier.size(80.dp)
                     )
+
                     Spacer(modifier = Modifier.height(16.dp))
+
                     Text("¡Reseña publicada con éxito!", fontSize = 22.sp)
+
                     Spacer(modifier = Modifier.height(24.dp))
-                    Button(onClick = onVolver) { Text("Volver al inicio") }
+
+                    Button(onClick = onVolver) {
+                        Text("Volver al inicio")
+                    }
                 }
             }
         }
-
 
         else -> {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -109,6 +140,7 @@ fun PantallaCarrito(
                     Button(onClick = onVolver) {
                         Text("Volver al inicio")
                     }
+
                     Text(
                         "Carrito",
                         fontWeight = FontWeight.Bold,
@@ -169,6 +201,7 @@ fun PantallaCarrito(
 }
 
 
+
 @Composable
 fun ItemCarritoRow(
     producto: CarritoProducto,
@@ -180,19 +213,10 @@ fun ItemCarritoRow(
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val painter = if (producto.imageRes.startsWith("http")) {
 
-            rememberAsyncImagePainter(producto.imageRes)
-        } else {
 
-            painterResource(id = producto.imageRes.toInt())
-        }
+        ImagenSegura(producto.imageRes, size = 64)
 
-        Image(
-            painter = painter,
-            contentDescription = producto.nombre,
-            modifier = Modifier.size(64.dp)
-        )
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
